@@ -6,15 +6,19 @@ const { Pool } = pkg;
 const app = express();
 const port = 5000;
 
-// Enable CORS for all routes
+// Add middleware to parse JSON request bodies
+app.use(express.json());
+
+// Update CORS configuration to include PUT method
 app.use(cors({
-  origin: 'http://localhost:5173', // Allow requests from your frontend
-  methods: ['GET', 'POST'], // Allow specific HTTP methods
-  allowedHeaders: ['Content-Type'], // Allow specific headers
+  origin: 'http://localhost:5173', // Ensure this matches the frontend origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Added PUT method here
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // Allow credentials
 }));
 
-// Middleware to parse JSON bodies
-app.use(express.json());
+// Enable pre-flight across-the-board
+app.options('*', cors());
 
 // Database connection configuration
 const pool = new Pool({
@@ -49,6 +53,38 @@ app.post('/api/insurance', async (req, res) => {
     // Validate required fields but allow duplicates
     if (!req.body.personalInfo || !req.body.healthInfo || !req.body.coverage) {
       throw new Error('Missing required form sections');
+    }
+
+    // Age validation
+    const dateOfBirth = new Date(req.body.personalInfo.dateOfBirth);
+    const ageInMs = Date.now() - dateOfBirth.getTime();
+    const ageDate = new Date(ageInMs);
+    const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+
+    if (age < 18) {
+      throw new Error('Applicant must be at least 18 years old');
+    }
+
+    // Gender constraint for Maternity Cover
+    if (
+      req.body.coverage.additionalBenefits &&
+      req.body.coverage.additionalBenefits.includes('maternity cover') &&
+      req.body.personalInfo.gender !== 'female'
+    ) {
+      throw new Error('Maternity Cover can only be selected by female applicants');
+    }
+
+    // Prevent negative numeric values
+    const numericFields = [
+      { value: req.body.healthInfo.height, name: 'Height' },
+      { value: req.body.healthInfo.weight, name: 'Weight' },
+      // Add other numeric fields if necessary
+    ];
+
+    for (const field of numericFields) {
+      if (field.value < 0) {
+        throw new Error(`${field.name} cannot be negative`);
+      }
     }
 
     // Convert empty strings to null for the database
@@ -155,6 +191,126 @@ app.post('/api/insurance', async (req, res) => {
       message: 'Error submitting insurance application', 
       error: error.message
     });
+  } finally {
+    client.release();
+  }
+});
+
+// Get records from a specific table
+app.get('/api/:table', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { table } = req.params;
+    // Validate table name to prevent SQL injection
+    const validTables = ['personal_info', 'address', 'coverage', 'family_members', 'health_info'];
+    if (!validTables.includes(table)) {
+      throw new Error('Invalid table name');
+    }
+    
+    const result = await client.query(`SELECT * FROM insurance.${table}`);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: error.message });
+  } finally {
+    client.release();
+  }
+});
+
+// Delete record from a specific table with cascade handling
+app.delete('/api/:table/:id', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const { table, id } = req.params;
+    
+    console.log(`Attempting to delete from ${table} with id ${id}`);
+
+    switch (table) {
+      case 'personal_info':
+        // First find and delete all dependent records
+        const coverageIds = await client.query(
+          'SELECT coverage_id FROM insurance.coverage WHERE person_id = $1',
+          [id]
+        );
+        
+        if (coverageIds.rows.length > 0) {
+          const ids = coverageIds.rows.map(row => row.coverage_id);
+          await client.query(
+            'DELETE FROM insurance.family_members WHERE coverage_id = ANY($1)',
+            [ids]
+          );
+        }
+
+        // Delete related records
+        await client.query('DELETE FROM insurance.health_info WHERE person_id = $1', [id]);
+        await client.query('DELETE FROM insurance.coverage WHERE person_id = $1', [id]);
+        await client.query('DELETE FROM insurance.address WHERE person_id = $1', [id]);
+        await client.query('DELETE FROM insurance.personal_info WHERE person_id = $1', [id]);
+        break;
+
+      case 'coverage':
+        // Delete family members first
+        await client.query('DELETE FROM insurance.family_members WHERE coverage_id = $1', [id]);
+        // Then delete coverage
+        await client.query('DELETE FROM insurance.coverage WHERE coverage_id = $1', [id]);
+        break;
+
+      case 'health_info':
+        await client.query('DELETE FROM insurance.health_info WHERE health_id = $1', [id]);
+        break;
+
+      case 'address':
+        await client.query('DELETE FROM insurance.address WHERE address_id = $1', [id]);
+        break;
+
+      case 'family_members':
+        await client.query('DELETE FROM insurance.family_members WHERE member_id = $1', [id]);
+        break;
+
+      default:
+        throw new Error('Invalid table name');
+    }
+
+    await client.query('COMMIT');
+    res.json({ 
+      success: true, 
+      message: `Record deleted successfully from ${table}` 
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error deleting record:', error);
+    res.status(500).json({ error: error.message });
+  } finally {
+    client.release();
+  }
+});
+
+// Update record in a specific table
+app.put('/api/:table/:id', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { table, id } = req.params;
+    const updates = req.body;
+
+    console.log(`Attempting to update ${table} with id ${id}`);
+
+    // Validate table name to prevent SQL injection
+    const validTables = ['personal_info', 'address', 'coverage', 'family_members', 'health_info'];
+    if (!validTables.includes(table)) {
+      throw new Error('Invalid table name');
+    }
+
+    // Build the SET clause dynamically
+    const setClause = Object.keys(updates).map((key, index) => `${key} = $${index + 1}`).join(', ');
+    const values = Object.values(updates);
+
+    await client.query(`UPDATE insurance.${table} SET ${setClause} WHERE ${table === 'personal_info' ? 'person_id' : table === 'address' ? 'address_id' : table === 'coverage' ? 'coverage_id' : table === 'family_members' ? 'member_id' : 'health_id'} = $${values.length + 1}`, [...values, id]);
+
+    res.json({ success: true, message: `Record updated successfully in ${table}` });
+  } catch (error) {
+    console.error('Error updating record:', error);
+    res.status(500).json({ error: error.message });
   } finally {
     client.release();
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,6 +6,7 @@ const InsuranceFormStep3 = ({ formData, handleInputChange, setPage }) => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const formatDateForDB = (dateString) => {
@@ -13,13 +14,39 @@ const InsuranceFormStep3 = ({ formData, handleInputChange, setPage }) => {
     return dateString;
   };
 
+  const validateFields = () => {
+    const newErrors = {};
+    const numericFields = [
+      { value: formData.healthInfo.height, name: 'Height' },
+      { value: formData.healthInfo.weight, name: 'Weight' },
+      // Add other numeric fields if necessary
+    ];
+
+    for (const field of numericFields) {
+      if (field.value < 0) {
+        newErrors[field.name.toLowerCase()] = `${field.name} cannot be negative`;
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateFields()) {
+      return;
+    }
     setSubmitted(true);
     setError('');
     setIsLoading(true);
 
     try {
+      // Ensure formData is correctly structured
+      if (!formData.personalInfo || !formData.healthInfo || !formData.coverage) {
+        throw new Error('Missing required form sections');
+      }
+
       // Format data before sending
       const formattedData = {
         personalInfo: {
@@ -74,7 +101,7 @@ const InsuranceFormStep3 = ({ formData, handleInputChange, setPage }) => {
           {error}
         </div>
       )}
-      <section className="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+      <section className="max-w-2xl mx-auto bg-white dark:bg-glass-light p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Health Information</h2>
         
         <div className="space-y-6">
@@ -86,12 +113,17 @@ const InsuranceFormStep3 = ({ formData, handleInputChange, setPage }) => {
                 type="number"
                 value={formData.healthInfo.height}
                 onChange={(e) => handleInputChange('healthInfo', 'height', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg 
+                className={`w-full px-3 py-2 border ${
+                  errors.height ? 'border-red-500' : 'border-gray-300'
+                } rounded-lg 
                   bg-white dark:bg-gray-700 
                   text-gray-900 dark:text-white 
-                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
                 required
               />
+              {errors.height && (
+                <p className="text-red-500 text-sm mt-1">{errors.height}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Weight (kg)</label>
@@ -99,12 +131,17 @@ const InsuranceFormStep3 = ({ formData, handleInputChange, setPage }) => {
                 type="number"
                 value={formData.healthInfo.weight}
                 onChange={(e) => handleInputChange('healthInfo', 'weight', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg 
+                className={`w-full px-3 py-2 border ${
+                  errors.weight ? 'border-red-500' : 'border-gray-300'
+                } rounded-lg 
                   bg-white dark:bg-gray-700 
                   text-gray-900 dark:text-white 
-                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
                 required
               />
+              {errors.weight && (
+                <p className="text-red-500 text-sm mt-1">{errors.weight}</p>
+              )}
             </div>
           </div>
 

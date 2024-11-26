@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Floating Gradient */
+.floating-gradient {
+  position: fixed;
+  width: 200px; /* Increased size for fog effect */
+  height: 200px; /* Increased size for fog effect */
+  background: linear-gradient(135deg, rgba(255, 100, 100, 0.3), rgba(100, 100, 255, 0.3)); /* Lighter colors */
+  border-radius: 50%;
+  pointer-events: none; /* Prevent interactions */
+  z-index: 9999;
+  transition: transform 0.1s ease, opacity 0.2s ease;
+  opacity: 0.5; /* Lowered opacity for a lighter effect */
+  filter: blur(50px); /* Increased blur to enhance the soft fog effect */
+  will-change: transform; /* Improve performance during animations */
+}
+
+
+.group:hover .group-hover\:block,
+.group:focus-within .group-hover\:block {
+  display: block;
+}
