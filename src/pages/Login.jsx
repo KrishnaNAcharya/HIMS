@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../firebase'; // Ensure this path is correct
 import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -17,9 +18,10 @@ const Login = () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      toast.success('Successfully logged in!');
       navigate('/home'); // Navigate to home after login
     } catch (err) {
-      setError('Failed to log in. Please check your credentials.');
+      toast.error('Failed to log in. Please check your credentials.');
     }
   };
 
@@ -27,9 +29,10 @@ const Login = () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
+      toast.success('Successfully signed in with Google!');
       navigate('/home'); // Navigate to home after successful Google sign-in
     } catch (err) {
-      setError('Failed to sign in with Google.');
+      toast.error('Failed to sign in with Google.');
     }
   };
 
@@ -44,9 +47,9 @@ const Login = () => {
 
     try {
       await sendPasswordResetEmail(auth, email);
-      setMessage('Password reset email sent. Please check your inbox.');
+      toast.success('Password reset email sent. Please check your inbox.');
     } catch (err) {
-      setError('Failed to send password reset email. Please try again.');
+      toast.error('Failed to send password reset email. Please try again.');
     }
   };
 

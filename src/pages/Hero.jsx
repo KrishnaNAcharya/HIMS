@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import docImage from '../assets/doc4.svg'; // Import the SVG image
 import { useAuth } from '../context/AuthContext';
+import Sparkles from '../components/Sparkles';
+import Loading from '../components/Loading';
 
 const Hero = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const { isAdmin } = useAuth();
+
+  useEffect(() => {
+    const image = new Image();
+    image.src = docImage;
+    image.onload = () => {
+      setIsLoading(false);
+    };
+  }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <section className="bg-white dark:bg-glass-dark text-gray-800 dark:text-white text-center py-20 min-h-screen flex flex-col lg:flex-row justify-start items-center lg:justify-between px-8 lg:px-16 relative overflow-hidden">
+      <Sparkles />
       {/* Text Content */}
       <div className="lg:w-1/2 mb-10 lg:mb-0 z-10">
         <h2 className="text-5xl font-bold mb-4">

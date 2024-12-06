@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Import useAuth
+import { toast } from 'react-hot-toast';
 
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -22,6 +23,16 @@ const Header = () => {
   const handleProfileClick = () => {
     if (currentUser) {
       navigate('/profile'); // Redirect to the profile page
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      toast.success('Successfully signed out!');
+      navigate('/');
+    } catch (error) {
+      toast.error('Failed to sign out: ' + error.message);
     }
   };
 
@@ -49,7 +60,7 @@ const Header = () => {
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-glass-dark shadow-lg rounded-lg py-2 hidden group-hover:block group-focus-within:block">
                   <p className="px-4 py-2 text-gray-800 dark:text-white">{currentUser.displayName}</p>
                   <button
-                    onClick={logout}
+                    onClick={handleSignOut}
                     className="w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
                   >
                     Sign Out

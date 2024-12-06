@@ -4,9 +4,11 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   updateProfile,
+  signOut, // Add signOut import
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext'; // Add this import
+import { toast } from 'react-hot-toast';
 
 const ProfilePage = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -44,40 +46,38 @@ const ProfilePage = () => {
     if (user) {
       updateProfile(user, { displayName: fullName })
         .then(() => {
-          alert("Your profile has been updated.");
+          toast.success('Profile updated successfully!');
           setEditMode(false);
         })
         .catch((error) => {
-          console.error("Error updating profile:", error);
-          alert("Failed to update profile. Please try again.");
+          toast.error('Failed to update profile: ' + error.message);
         });
     }
   };
 
   const handleForgotPassword = () => {
     if (!email) {
-      alert("Please enter your email address.");
+      toast.error('Please enter your email address.');
       return;
     }
 
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        alert("Password reset email sent! Check your inbox.");
+        toast.success('Password reset email sent! Please check your inbox.');
         setShowForgotPassword(false);
       })
       .catch((error) => {
-        console.error("Error sending password reset email:", error);
-        alert("Error sending password reset email. Please try again.");
+        toast.error('Error sending password reset email: ' + error.message);
       });
   };
 
   const handleSignOut = async () => {
     try {
-      await logout();
+      await signOut(auth);
+      toast.success('Successfully signed out!');
       navigate('/');
     } catch (error) {
-      console.error("Error signing out:", error);
-      alert("Failed to sign out. Please try again.");
+      toast.error('Failed to sign out: ' + error.message);
     }
   };
 

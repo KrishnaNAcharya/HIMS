@@ -17,17 +17,28 @@ module.exports = {
         'blur': 'blur(20px)',
       },
       animation: {
-        'sparkle': 'sparkle 2s linear infinite',
+        'sparkle': 'sparkle 1.5s ease-in-out infinite',
       },
       keyframes: {
         sparkle: {
-          '0%': { opacity: 0, transform: 'scale(0)' },
-          '50%': { opacity: 1, transform: 'scale(1)' },
-          '100%': { opacity: 0, transform: 'scale(0)' },
+          '0%, 100%': { 
+            opacity: 0,
+            transform: 'scale(0)',
+          },
+          '50%': { 
+            opacity: 1,
+            transform: 'scale(1)',
+          }
         },
       },
     },
   },
+  safelist: [
+    'animate-sparkle',
+    'text-blue-400',
+    'dark:text-white',
+    'animate-spin'
+  ],
   plugins: [
     require('tailwindcss-filters'), // For the glassmorphism blur effect
   ],

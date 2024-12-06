@@ -21,12 +21,23 @@ import Success from './pages/Success'; // Import Success
 import PaymentPage from './pages/PaymentPage'; // Add import
 import Profile from './pages/Profile';
 import AdminPanel from './components/AdminPanel'; // Import AdminPanel
+import { Toaster } from 'react-hot-toast'; // Import Toaster
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
         <div className="bg-dark-bg text-white min-h-screen font-sans relative">
+          <Toaster 
+            position="top-center"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#333',
+                color: '#fff',
+              },
+            }}
+          />
           <FloatingGradient />
           <Header />
           <Routes>

@@ -5,13 +5,11 @@ const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 const Sparkle = ({ style }) => {
   return (
     <div 
-      className="absolute animate-sparkle dark:bg-white dark:shadow-white bg-blue-400 shadow-blue-400"
+      className="absolute w-1 h-1 rounded-full animate-sparkle dark:text-white text-blue-400"
       style={{
         ...style,
-        width: '4px',
-        height: '4px',
-        borderRadius: '50%',
-        boxShadow: '0 0 4px 1px currentColor',
+        background: 'currentColor',
+        boxShadow: '0 0 8px 2px currentColor',
       }}
     />
   );
