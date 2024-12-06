@@ -27,6 +27,38 @@ const PaymentPage = () => {
     return cvv.replace(/\d/g, '*');
   };
 
+  const calculatePlanAmount = () => {
+    const { planType, paymentFrequency } = formData.coverage;
+    let baseAmount = 0;
+
+    // Base amounts for different plans
+    switch (planType) {
+      case 'basic':
+        baseAmount = 2000;
+        break;
+      case 'standard':
+        baseAmount = 5000;
+        break;
+      case 'premium':
+        baseAmount = 10000;
+        break;
+      default:
+        baseAmount = 0;
+    }
+
+    // Adjust amount based on payment frequency
+    switch (paymentFrequency) {
+      case 'monthly':
+        return baseAmount;
+      case 'quarterly':
+        return baseAmount * 3;
+      case 'yearly':
+        return baseAmount * 12;
+      default:
+        return baseAmount;
+    }
+  };
+
   const renderPaymentFields = () => {
     switch (formData.coverage.paymentMethod) {
       case 'upi':
@@ -126,8 +158,12 @@ const PaymentPage = () => {
       <div className="max-w-md w-full bg-white dark:bg-glass-dark rounded-lg shadow-lg p-6 mt-[-50px]">
         <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Payment Details</h2>
         <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg mb-6">
-          <p className="text-blue-800 dark:text-blue-200 font-medium">Amount to Pay: ₹5,000</p>
-          <p className="text-sm text-blue-600 dark:text-blue-300">Insurance Premium</p>
+          <p className="text-blue-800 dark:text-blue-200 font-medium">
+            Amount to Pay: ₹{calculatePlanAmount().toLocaleString()}
+          </p>
+          <p className="text-sm text-blue-600 dark:text-blue-300">
+            {formData.coverage.planType.charAt(0).toUpperCase() + formData.coverage.planType.slice(1)} Plan - {formData.coverage.paymentFrequency.charAt(0).toUpperCase() + formData.coverage.paymentFrequency.slice(1)} Payment
+          </p>
         </div>
         <form onSubmit={handlePayment}>
           <div className="space-y-4">

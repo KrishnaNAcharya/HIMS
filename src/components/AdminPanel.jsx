@@ -176,11 +176,11 @@ const AdminPanel = () => {
     <div className="min-h-screen bg-white dark:bg-dark-bg">
       <div className="h-screen flex flex-col">
         {/* Header Section */}
-        <div className="bg-white dark:bg-glass-dark shadow-sm p-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="bg-white dark:bg-glass-dark shadow-sm p-0">
+          <div className="w-full px-4 py-8"> {/* Added py-6 for vertical padding */}
+            <div className="flex flex-col md:flex-row justify-between items-center gap-8"> {/* Increased gap-4 to gap-6 */}
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h2>
-              <div className="flex items-center gap-4 w-full md:w-auto">
+              <div className="flex items-center gap-8 w-full md:w-auto"> {/* Increased gap-4 to gap-6 */}
                 {/* Search Input */}
                 <div className="relative flex-1 md:w-64">
                   <input
@@ -209,9 +209,15 @@ const AdminPanel = () => {
                   className="px-4 py-2 border border-gray-300 rounded-lg 
                     bg-white dark:bg-glass-light text-gray-900 dark:text-white 
                     focus:ring-2 focus:ring-blue-500"
+                  style={{ colorScheme: 'dark' }} // Add this line
                 >
                   {tables.map(table => (
-                    <option key={table} value={table}>
+                    <option 
+                      key={table} 
+                      value={table} 
+                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      style={{ backgroundColor: '#1f2937' }} // Add this line for dark mode background
+                    >
                       {table.split('_').map(word => 
                         word.charAt(0).toUpperCase() + word.slice(1)
                       ).join(' ')}

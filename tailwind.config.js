@@ -16,6 +16,16 @@ module.exports = {
         'none': 'none',
         'blur': 'blur(20px)',
       },
+      animation: {
+        'sparkle': 'sparkle 2s linear infinite',
+      },
+      keyframes: {
+        sparkle: {
+          '0%': { opacity: 0, transform: 'scale(0)' },
+          '50%': { opacity: 1, transform: 'scale(1)' },
+          '100%': { opacity: 0, transform: 'scale(0)' },
+        },
+      },
     },
   },
   plugins: [

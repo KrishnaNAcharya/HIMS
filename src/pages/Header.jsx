@@ -29,7 +29,7 @@ const Header = () => {
     <header className="bg-white dark:bg-glass-dark backdrop-blur-md text-gray-800 dark:text-white p-4 shadow-lg sticky top-0 z-50 transition-colors duration-300">
       <div className="flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold hover:text-blue-500 transition-colors">
-          Health Insurance Management
+          Health Insurance Management System
         </Link>
         <nav className="flex items-center">
           <ul className="flex space-x-6 mr-6">
