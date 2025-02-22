@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { pool } from './config/db.js';
+import { pool } from './db/db.js';  // Updated import path
 import insuranceRoutes from './routes/insuranceRoutes.js';
 
 const app = express();

@@ -1,4 +1,4 @@
-import { pool } from '../config/db.js';
+import { pool } from '../db/db.js';
 
 export const testDbConnection = async (req, res) => {
   try {
@@ -16,10 +16,12 @@ export const submitInsuranceForm = async (req, res) => {
     await client.query('BEGIN');
     console.log('Received form data:', JSON.stringify(req.body, null, 2));
 
+    // Basic validation
     if (!req.body.personalInfo || !req.body.healthInfo || !req.body.coverage) {
       throw new Error('Missing required form sections');
     }
 
+    // Age validation for applicant
     const dateOfBirth = new Date(req.body.personalInfo.dateOfBirth);
     const ageInMs = Date.now() - dateOfBirth.getTime();
     const ageDate = new Date(ageInMs);
@@ -29,6 +31,28 @@ export const submitInsuranceForm = async (req, res) => {
       throw new Error('Applicant must be at least 18 years old');
     }
 
+    // Family member validations
+    if (req.body.coverage.familyMembers && req.body.coverage.familyMembers.length > 0) {
+      for (const member of req.body.coverage.familyMembers) {
+        // Validate member age is positive
+        const memberAge = parseInt(member.age);
+        if (isNaN(memberAge) || memberAge < 0) {
+          throw new Error(`Invalid age ${member.age} for family member ${member.name}`);
+        }
+
+        // If applicant is under 18, they cannot have children
+        if (age < 18 && member.relation.toLowerCase() === 'child') {
+          throw new Error('Applicants under 18 cannot add children as family members');
+        }
+
+        // Validate child relationship
+        if (member.relation.toLowerCase() === 'child' && memberAge >= age) {
+          throw new Error(`Child's age (${memberAge}) cannot be greater than or equal to applicant's age (${age})`);
+        }
+      }
+    }
+
+    // Maternity cover validation
     if (
       req.body.coverage.additionalBenefits &&
       req.body.coverage.additionalBenefits.includes('maternity cover') &&
@@ -114,6 +138,20 @@ export const submitInsuranceForm = async (req, res) => {
       );
     }
 
+    // Convert string fields to arrays if they're not already arrays
+    const healthInfo = {
+      ...req.body.healthInfo,
+      existingConditions: Array.isArray(req.body.healthInfo.existingConditions) 
+        ? req.body.healthInfo.existingConditions 
+        : [req.body.healthInfo.existingConditions],
+      familyHistory: Array.isArray(req.body.healthInfo.familyHistory)
+        ? req.body.healthInfo.familyHistory
+        : [req.body.healthInfo.familyHistory],
+      medications: Array.isArray(req.body.healthInfo.medications)
+        ? req.body.healthInfo.medications
+        : [req.body.healthInfo.medications]
+    };
+
     await client.query(
       `INSERT INTO insurance.health_info 
        (person_id, height, weight, has_existing_conditions, existing_conditions, 
@@ -122,16 +160,16 @@ export const submitInsuranceForm = async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         personId,
-        req.body.healthInfo.height,
-        req.body.healthInfo.weight,
-        req.body.healthInfo.hasExistingConditions,
-        req.body.healthInfo.existingConditions,
-        req.body.healthInfo.smokingStatus,
-        req.body.healthInfo.familyHistory,
-        req.body.healthInfo.exerciseFrequency,
-        req.body.healthInfo.alcoholConsumption,
-        req.body.healthInfo.takingMedications,
-        req.body.healthInfo.medications
+        healthInfo.height,
+        healthInfo.weight,
+        healthInfo.hasExistingConditions,
+        healthInfo.existingConditions,
+        healthInfo.smokingStatus,
+        healthInfo.familyHistory,
+        healthInfo.exerciseFrequency,
+        healthInfo.alcoholConsumption,
+        healthInfo.takingMedications,
+        healthInfo.medications
       ]
     );
 
@@ -254,6 +292,82 @@ export const updateRecord = async (req, res) => {
     res.json({ success: true, message: `Record updated successfully in ${table}` });
   } catch (error) {
     console.error('Error updating record:', error);
+    res.status(500).json({ error: error.message });
+  } finally {
+    client.release();
+  }
+};
+
+export const verifyTables = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    // Check if schema exists
+    const schemaCheck = await client.query(`
+      SELECT schema_name 
+      FROM information_schema.schemata 
+      WHERE schema_name = 'insurance'
+    `);
+
+    // Check if all tables exist
+    const tableCheck = await client.query(`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'insurance'
+      ORDER BY table_name
+    `);
+
+    const tables = tableCheck.rows.map(row => row.table_name);
+    
+    res.json({
+      success: true,
+      schemaExists: schemaCheck.rows.length > 0,
+      tables: tables,
+      expectedTables: [
+        'address',
+        'coverage',
+        'family_members',
+        'health_info',
+        'personal_info'
+      ]
+    });
+  } catch (error) {
+    console.error('Verification error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  } finally {
+    client.release();
+  }
+};
+
+export const viewTableData = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { table } = req.params;
+    const validTables = ['personal_info', 'address', 'coverage', 'family_members', 'health_info'];
+    
+    if (!validTables.includes(table)) {
+      throw new Error('Invalid table name');
+    }
+
+    const result = await client.query(`
+      SELECT * FROM insurance.${table}
+      LIMIT 100
+    `);
+
+    const columnInfo = await client.query(`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_schema = 'insurance' 
+      AND table_name = $1
+    `, [table]);
+
+    res.json({
+      tableName: table,
+      columns: columnInfo.rows,
+      rowCount: result.rowCount,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Error viewing table:', error);
     res.status(500).json({ error: error.message });
   } finally {
     client.release();
