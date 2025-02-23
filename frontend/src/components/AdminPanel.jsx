@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/config.js';
 
 const EditModal = ({ record, onClose, onSave, selectedTable }) => {
   const [editedRecord, setEditedRecord] = useState(record);
@@ -131,7 +132,7 @@ const AdminPanel = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`http://localhost:5000/api/${selectedTable}`);
+      const response = await axios.get(`${API_BASE_URL}/api/${selectedTable}`);
       setRecords(response.data);
     } catch (err) {
       setError(`Error fetching data: ${err.message}`);
@@ -143,7 +144,7 @@ const AdminPanel = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this record?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/${selectedTable}/${id}`);
+        await axios.delete(`${API_BASE_URL}/api/${selectedTable}/${id}`);
         fetchRecords();
       } catch (err) {
         setError(`Error deleting record: ${err.message}`);
@@ -161,7 +162,7 @@ const AdminPanel = () => {
   const handleSaveEdit = async (updatedRecord) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/${selectedTable}/${updatedRecord.id || updatedRecord.person_id || updatedRecord.coverage_id}`,
+        `${API_BASE_URL}/api/${selectedTable}/${updatedRecord.id || updatedRecord.person_id || updatedRecord.coverage_id}`,
         updatedRecord
       );
       setEditingRecord(null);

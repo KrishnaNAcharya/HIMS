@@ -9,7 +9,7 @@ const port = 5000;
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://hims-f.onrender.com'],
+  origin: ['http://localhost:5173', 'https://hims-f.onrender.com', 'https://hims-th9u.onrender.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
