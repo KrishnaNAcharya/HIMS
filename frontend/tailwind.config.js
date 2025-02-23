@@ -1,4 +1,4 @@
-// tailwind.config.js
+/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',  // or 'media' if you want to follow system preferences
   content: [
@@ -39,7 +39,5 @@ export default {
     'dark:text-white',
     'animate-spin'
   ],
-  plugins: [
-    require('tailwindcss-filters'), // For the glassmorphism blur effect
-  ],
+  plugins: [],
 };
