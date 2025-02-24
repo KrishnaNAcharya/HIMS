@@ -4,10 +4,15 @@ import { useAuth } from '../context/AuthContext'; // Import useAuth
 import { toast } from 'react-hot-toast';
 
 const Header = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true); // Set default to true
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentUser, logout } = useAuth(); // Get currentUser and logout from context
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Set dark mode on initial load
+    document.documentElement.classList.add('dark');
+  }, []); // Empty dependency array for one-time execution
 
   useEffect(() => {
     if (isDarkMode) {
