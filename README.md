@@ -62,7 +62,7 @@ cd HIMS
 
 #### 2. Frontend Setup
 ```bash
-cd my-hims-frontend
+cd frontend
 npm install
 npm run dev
 ```
@@ -70,7 +70,7 @@ The frontend is built with Vite and React. Tailwind CSS and ShadCN UI are used f
 
 #### 3. Backend Setup
 ```bash
-cd my-hims-backend
+cd backend
 npm install
 node server.js
 ```
