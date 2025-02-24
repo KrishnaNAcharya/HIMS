@@ -13,8 +13,8 @@
 - [References](#references)
 
   ## Live Deployment using Render
-- [HIMS on Render](https://hims-f.onrender.com)
-- (The above link hosts the frontend using Static Site in Render. The backend is hosted too as a Web Service in Render which is automatically loaded by frontend codebase).
+- [https://hims-f.onrender.com](https://hims-f.onrender.com)
+- (The above link hosts the frontend using Static Site in Render. The backend is hosted too as a Web Service in Render which is automatically loaded by the frontend codebase).
 
 ## Overview
 
