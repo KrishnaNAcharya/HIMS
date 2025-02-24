@@ -84,19 +84,50 @@ Ensure that PostgreSQL is running and that you have created a database (e.g., `h
 
 ```
 HIMS/
-├── my-hims-frontend/   # Frontend built with React and Vite
-│   ├── public/
+├── frontend/
 │   ├── src/
+│   │   ├── assets/
+│   │   │   └── doc4.svg
+│   │   ├── components/
+│   │   │   ├── Loading.jsx
+│   │   │   ├── Sparkles.jsx
+│   │   │   └── AdminPanel.jsx
+│   │   ├── config/
+│   │   │   └── config.js
+│   │   ├── context/
+│   │   │   └── AuthContext.js
+│   │   ├── pages/
+│   │   │   ├── AboutUs.jsx
+│   │   │   ├── ContactUs.jsx
+│   │   │   ├── Header.jsx
+│   │   │   ├── Hero.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   └── SignUp.jsx
+│   │   ├── api/
+│   │   │   └── api.js
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
+│   ├── index.html
 │   ├── package.json
-│   └── ...
-├── my-hims-backend/    # Backend built with Node.js and Express.js
-│   ├── server.js
-│   ├── routes/
+│   ├── tailwind.config.js
+│   └── vite.config.js
+│
+├── backend/
 │   ├── controllers/
+│   │   └── insuranceController.js
+│   ├── routes/
+│   │   └── insuranceRoutes.js
+│   ├── db/
+│   │   ├── db.js
+│   │   ├── migrate.js
+│   │   └── schema.sql
+│   ├── server.js
 │   ├── package.json
-│   └── ...
-└── README.md           # This file
-```
+│   └── .env
+│
+└── README.md      # This file
 
 ## Usage
 
