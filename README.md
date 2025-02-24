@@ -128,7 +128,7 @@ HIMS/
 │   └── .env
 │
 └── README.md      # This file
-
+```
 ## Usage
 
 - **User Registration and Login:** Secure authentication using Firebase.
