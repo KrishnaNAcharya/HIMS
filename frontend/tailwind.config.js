@@ -31,6 +31,9 @@ export default {
           }
         },
       },
+      cursor: {
+        'webkit-grab': '-webkit-grab',
+      }
     },
   },
   safelist: [
@@ -40,4 +43,7 @@ export default {
     'animate-spin'
   ],
   plugins: [],
+  variants: {
+    scrollbar: ['dark', 'rounded']
+  },
 };

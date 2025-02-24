@@ -79,57 +79,64 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-dark-bg text-gray-800 dark:text-white">
-      <form onSubmit={handleSignUp} className="w-full max-w-md p-6 bg-white dark:bg-glass-dark shadow-md rounded-lg">
-        <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        {successMessage && (
-          <p className="text-blue-500 mb-4">
-            {successMessage}
-          </p>
-        )}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-dark-bg text-gray-800 dark:text-white p-4">
+      <form onSubmit={handleSignUp} className="w-full max-w-md p-6 md:p-8 bg-white dark:bg-glass-dark shadow-lg rounded-lg space-y-6">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6">Sign Up</h2>
+        {error && <p className="text-red-500 text-sm md:text-base mb-4">{error}</p>}
+        {successMessage && <p className="text-blue-500 text-sm md:text-base mb-4">{successMessage}</p>}
+        
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          className="w-full p-3 mb-4 border rounded dark:bg-gray-800 dark:text-white"
+          className="w-full p-3 border rounded dark:bg-gray-800 dark:text-white text-sm md:text-base"
           required
         />
+        
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
-          className="w-full p-3 mb-4 border rounded dark:bg-gray-800 dark:text-white"
+          className="w-full p-3 border rounded dark:bg-gray-800 dark:text-white text-sm md:text-base"
           required
         />
-        <div className="flex items-center mb-4">
+        
+        <div className="flex items-center">
           <input
             type="checkbox"
             id="isAdmin"
             checked={isAdmin}
             onChange={(e) => setIsAdmin(e.target.checked)}
-            className="mr-2"
+            className="mr-2 h-4 w-4"
           />
-          <label htmlFor="isAdmin">Register as Admin</label>
+          <label htmlFor="isAdmin" className="text-sm md:text-base">Register as Admin</label>
         </div>
-        <button type="submit" className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600">
+        
+        <button type="submit" className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm md:text-base">
           Sign Up
         </button>
-        <hr className="my-4" />
+        
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white dark:bg-glass-dark text-gray-500">or</span>
+          </div>
+        </div>
+        
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="w-full p-3 bg-red-600 text-white rounded hover:bg-red-700"
+          className="w-full p-3 bg-red-600 text-white rounded hover:bg-red-700 text-sm md:text-base"
         >
           Sign in with Google
         </button>
-        <p className="mt-4 text-center">
-          Already have an account?{' '}
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Login
-          </Link>
+        
+        <p className="mt-4 text-center text-sm md:text-base">
+          Already have an account? <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
         </p>
       </form>
     </div>

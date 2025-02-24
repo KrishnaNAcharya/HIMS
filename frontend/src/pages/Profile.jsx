@@ -82,99 +82,94 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-glass-dark text-gray-800 dark:text-white transition-colors duration-300">
-      <div className="w-full max-w-md bg-white dark:bg-glass-dark shadow-lg rounded-lg p-8">
-        <div className="flex flex-col items-center mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-glass-dark text-gray-800 dark:text-white p-4">
+      <div className="w-full max-w-2xl bg-white dark:bg-glass-dark shadow-lg rounded-lg overflow-hidden">
+        <div className="p-6 md:p-8 space-y-6">
           {/* Avatar Section */}
-          <div className="relative mb-4">
-            <img
-              src="/src/assets/pfp.png"
-              alt="Profile"
-              className="w-32 h-32 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
-            />
+          <div className="flex flex-col items-center">
+            <div className="relative mb-4">
+              <img
+                src="/src/assets/pfp.png"
+                alt="Profile"
+                className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
+              />
+            </div>
+            <h2 className="text-xl md:text-2xl font-semibold mt-2">{fullName || "No Name Set"}</h2>
+            <p className="text-sm md:text-base text-gray-500">{email}</p>
+            {!editMode && (
+              <button
+                onClick={() => setEditMode(true)}
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm md:text-base"
+              >
+                Edit Profile
+              </button>
+            )}
           </div>
-          {/* User Name and Email */}
-          <h2 className="text-2xl font-semibold mt-4">{fullName || "No Name Set"}</h2>
-          <p className="text-sm text-gray-500">{email}</p>
-          {!editMode && (
-            <button
-              onClick={() => setEditMode(true)}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            >
-              Edit Profile
-            </button>
+
+          {/* Profile Form */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm md:text-base font-medium text-gray-600 mb-1">Full Name</label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                disabled={!editMode}
+                className="w-full p-3 border rounded-md text-sm md:text-base dark:bg-gray-700"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm md:text-base font-medium text-gray-600 mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                disabled
+                className="w-full p-3 border rounded-md text-sm md:text-base dark:bg-gray-700"
+              />
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          {editMode && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-end">
+              <button
+                onClick={saveChanges}
+                className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm md:text-base"
+              >
+                Save Changes
+              </button>
+              <button
+                onClick={() => setEditMode(false)}
+                className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 text-sm md:text-base"
+              >
+                Cancel
+              </button>
+            </div>
           )}
-        </div>
 
-        {/* Profile Form */}
-        <div className="mt-6 space-y-4">
-          {/* Full Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600">Full Name</label>
-            <input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              disabled={!editMode}
-              className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600">Email</label>
-            <input
-              type="email"
-              value={email}
-              disabled
-              className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-            />
-          </div>
-        </div>
-
-        {/* Actions */}
-        {editMode && (
-          <div className="mt-6 flex justify-between">
+          {/* Additional Actions */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <button
-              onClick={saveChanges}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              onClick={() => setShowForgotPassword(true)}
+              className="text-blue-500 hover:text-blue-700 text-sm md:text-base"
             >
-              Save Changes
+              Reset Password
             </button>
             <button
-              onClick={() => setEditMode(false)}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+              onClick={handleSignOut}
+              className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm md:text-base"
             >
-              Cancel
+              Sign Out
             </button>
           </div>
-        )}
-
-        {/* Forgot Password Link */}
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setShowForgotPassword(true)}
-            className="text-blue-500 hover:text-blue-700"
-          >
-            Forgot Password?
-          </button>
-        </div>
-
-        {/* Add Sign Out Button - place before the last closing div */}
-        <div className="mt-6 text-center">
-          <button
-            onClick={handleSignOut}
-            className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            Sign Out
-          </button>
         </div>
       </div>
 
-      {/* Forgot Password Modal */}
+      {/* Password Reset Modal */}
       {showForgotPassword && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-lg w-96">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Reset Your Password</h3>
             <label className="block text-sm font-medium text-gray-600">Enter your email</label>
             <input

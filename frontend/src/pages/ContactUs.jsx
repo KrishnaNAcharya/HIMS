@@ -59,19 +59,32 @@ const offices = [
 
 const ContactUs = () => {
   return (
-    <section className="py-20 bg-white dark:bg-dark-bg">
-      <h3 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">Contact Us</h3>
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <section className="py-12 md:py-20 bg-white dark:bg-dark-bg min-h-screen">
+      <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-8 md:mb-12 text-gray-800 dark:text-white px-4">
+        Contact Us
+      </h3>
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
           {offices.map((office, index) => (
             <div 
               key={index} 
-              className="bg-glass-light dark:bg-glass-dark backdrop-blur-md p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+              className="bg-glass-light dark:bg-glass-dark backdrop-blur-md p-4 md:p-6 rounded-lg shadow-lg 
+                transition-all duration-300 hover:scale-102 hover:shadow-xl"
             >
-              <h4 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">{office.name}</h4>
-              <p className="text-gray-600 dark:text-gray-200 mb-1">Code: <span className="font-bold">{office.code}</span></p>
-              <p className="text-gray-600 dark:text-gray-200 mb-1">{office.address}</p>
-              <p className="text-gray-600 dark:text-gray-200">Email: <a href={`mailto:${office.email}`} className="underline">{office.email}</a></p>
+              <h4 className="text-lg md:text-xl font-semibold mb-2 text-gray-800 dark:text-white">
+                {office.name}
+              </h4>
+              <p className="text-sm md:text-base text-gray-600 dark:text-gray-200 mb-1">
+                Code: <span className="font-bold">{office.code}</span>
+              </p>
+              <p className="text-sm md:text-base text-gray-600 dark:text-gray-200 mb-1">
+                {office.address}
+              </p>
+              <p className="text-sm md:text-base text-gray-600 dark:text-gray-200">
+                Email: <a href={`mailto:${office.email}`} className="underline hover:text-blue-500">
+                  {office.email}
+                </a>
+              </p>
             </div>
           ))}
         </div>

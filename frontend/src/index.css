@@ -17,8 +17,37 @@
   will-change: transform; /* Improve performance during animations */
 }
 
-
 .group:hover .group-hover\:block,
 .group:focus-within .group-hover\:block {
   display: block;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4B5563 #F3F4F6;
+}
+
+.dark * {
+  scrollbar-color: #4B5563 #1F2937;
 }
