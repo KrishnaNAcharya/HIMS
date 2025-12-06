@@ -1,6 +1,6 @@
 // src/components/AboutUs.jsx
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const AboutUs = () => {
   const [openFAQ, setOpenFAQ] = useState(null);

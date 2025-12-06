@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import docImage from '../assets/doc4.svg'; // Import the SVG image
 import { useAuth } from '../context/AuthContext';

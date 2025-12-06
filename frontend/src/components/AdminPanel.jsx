@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/config.js';
 
-const EditModal = ({ record, onClose, onSave, selectedTable }) => {
+const EditModal = ({ record, onClose, onSave }) => {
   const [editedRecord, setEditedRecord] = useState(record);
 
   const handleInputChange = (key, value) => {
